@@ -14,8 +14,8 @@ final class EntryTypeSelector: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Привычка", for: .normal)
         button.titleLabel?.font = UIFont(name: "YS Display Medium", size: 16)
-        button.setTitleColor(UIColor(named: "CustomWhite"), for: .normal)
-        button.backgroundColor = UIColor(named: "CustomBlack")
+        button.setTitleColor(UIColor(resource: .customWhite), for: .normal)
+        button.backgroundColor = UIColor(resource: .customBlack)
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false

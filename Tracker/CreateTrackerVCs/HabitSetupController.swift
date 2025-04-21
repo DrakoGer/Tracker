@@ -14,7 +14,7 @@ final class HabitSetupController: UIViewController {
     private var activeDays: Set<WeekDay> = []
     private var category: TrackerGroup = TrackerGroup(name: "Уборка", entries: [])
     weak var delegate: EntryCreationDelegate?
-
+    
     private lazy var nameField: UITextField = {
         let field = UITextField()
         field.backgroundColor = UIColor(named: "CustomBackgroundDay")
@@ -27,9 +27,9 @@ final class HabitSetupController: UIViewController {
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
-
+    
     private let options = ["Категория", "Расписание"]
-
+    
     private lazy var optionsTable: UITableView = {
         let table = UITableView()
         table.backgroundColor = .clear
@@ -42,7 +42,7 @@ final class HabitSetupController: UIViewController {
         table.translatesAutoresizingMaskIntoConstraints = false
         return table
     }()
-
+    
     private lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Отмена", for: .normal)
@@ -55,7 +55,7 @@ final class HabitSetupController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
+    
     private lazy var saveButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
@@ -67,7 +67,7 @@ final class HabitSetupController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
+    
     private lazy var actionStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [cancelButton, saveButton])
         stack.axis = .horizontal
@@ -76,53 +76,53 @@ final class HabitSetupController: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "CustomWhite")
         navigationItem.title = "Новая привычка"
         setupInterface()
     }
-
+    
     private func setupInterface() {
         view.addSubview(nameField)
         view.addSubview(optionsTable)
         view.addSubview(actionStack)
-
+        
         saveButton.isEnabled = false
-
+        
         NSLayoutConstraint.activate([
             nameField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             nameField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             nameField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             nameField.heightAnchor.constraint(equalToConstant: 75),
-
+            
             optionsTable.topAnchor.constraint(equalTo: nameField.bottomAnchor, constant: 24),
             optionsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             optionsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             optionsTable.heightAnchor.constraint(equalToConstant: 150),
-
+            
             actionStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             actionStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             actionStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             actionStack.heightAnchor.constraint(equalToConstant: 60),
         ])
     }
-
+    
     @objc private func nameFieldChanged() {
         updateSaveButtonState()
     }
-
+    
     @objc private func cancelTapped() {
         dismiss(animated: true)
     }
-
+    
     @objc private func saveTapped() {
         guard let name = nameField.text, !name.isEmpty, !activeDays.isEmpty else { return }
         delegate?.didCreateNewHabit(name: name, group: group, icon: "🌟", color: UIColor(named: "CustomGreen")!, days: activeDays)
         presentingViewController?.presentingViewController?.dismiss(animated: true)
     }
-
+    
     private func updateSaveButtonState() {
         let isNameValid = !(nameField.text?.isEmpty ?? true)
         let isDaysSelected = !activeDays.isEmpty
@@ -135,7 +135,7 @@ extension HabitSetupController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return options.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "optionCell", for: indexPath)
         cell.accessoryType = .disclosureIndicator
@@ -148,11 +148,11 @@ extension HabitSetupController: UITableViewDelegate, UITableViewDataSource {
         cell.backgroundColor = UIColor(named: "CustomBackgroundDay")
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 75
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         if indexPath.row == 1 {
@@ -173,7 +173,7 @@ extension HabitSetupController: ScheduleViewController {
         }
         updateSaveButtonState()
     }
-
+    
     private func formatDaysText(days: Set<WeekDay>) -> String {
         guard !days.isEmpty else { return "" }
         if days.count == WeekDay.allCases.count {
