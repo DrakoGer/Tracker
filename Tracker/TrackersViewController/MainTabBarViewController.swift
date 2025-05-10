@@ -10,6 +10,7 @@ import UIKit
 
 final class MainTabBarViewController: UITabBarController {
     override func viewDidLoad() {
+        print("MainTabBarViewController: viewDidLoad called")
         super.viewDidLoad()
         configureTabs()
         styleTabBar()
