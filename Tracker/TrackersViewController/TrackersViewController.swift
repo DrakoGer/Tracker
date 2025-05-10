@@ -31,10 +31,16 @@ final class TrackersViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+            
+        print("TrackersViewController: viewDidLoad called")
         view.backgroundColor = UIColor(named: "CustomWhite")
         entryGroups = DataManager.shared.entryGroups
+        print("TrackersViewController: entryGroups loaded - \(entryGroups)")
         filterEntries(for: selectedDate)
+        print("TrackersViewController: entries filtered - \(entryGroups)")
         setupInterface()
+        print("TrackersViewController: setupInterface completed")
     }
 
     private lazy var emptyStateView: UIView = {
@@ -304,13 +310,27 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController: EntryCreationDelegate {
     func didCreateNewEvent(name: String, group: TrackerGroup, icon: String, color: UIColor) {
-        let newEntry = Tracker(id: UUID(), name: name, color: "CustomBlack", icon: String(icon), activeDays: [])
+        let newEntry = Tracker(
+            id: UUID(),
+            name: name,
+            color: color, // Используем переданный color
+            icon: icon,   // icon уже строка, преобразование не нужно
+            activeDays: [],
+            category: group // Передаем группу как category
+        )
         DataManager.shared.addEntry(newEntry, toGroupWithName: group.name)
         refreshInterfaceAfterCreation()
     }
 
     func didCreateNewHabit(name: String, group: TrackerGroup, icon: String, color: UIColor, days: Set<WeekDay>) {
-        let newEntry = Tracker(id: UUID(), name: name, color: "CustomBlack", icon: String(icon), activeDays: days)
+        let newEntry = Tracker(
+            id: UUID(),
+            name: name,
+            color: color, // Используем переданный color
+            icon: icon,   // icon уже строка, преобразование не нужно
+            activeDays: days,
+            category: group // Передаем группу как category
+        )
         DataManager.shared.addEntry(newEntry, toGroupWithName: group.name)
         refreshInterfaceAfterCreation()
     }
