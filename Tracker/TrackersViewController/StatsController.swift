@@ -10,7 +10,6 @@ import UIKit
 final class StatsController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("StatsController: viewDidLoad called")
         view.backgroundColor = .systemBlue
     }
 }

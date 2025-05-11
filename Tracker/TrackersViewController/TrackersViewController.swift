@@ -31,16 +31,10 @@ final class TrackersViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-            
-        print("TrackersViewController: viewDidLoad called")
         view.backgroundColor = UIColor(named: "CustomWhite")
         entryGroups = DataManager.shared.entryGroups
-        print("TrackersViewController: entryGroups loaded - \(entryGroups)")
         filterEntries(for: selectedDate)
-        print("TrackersViewController: entries filtered - \(entryGroups)")
         setupInterface()
-        print("TrackersViewController: setupInterface completed")
     }
 
     private lazy var emptyStateView: UIView = {
@@ -244,9 +238,11 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         let cellDate = Calendar.current.startOfDay(for: selectedDate)
         let isActive = cellDate <= today
 
+        let customGreen = UIColor(named: "CustomGreen") ?? .gray
+
         cell.configure(
             title: entry.name,
-            color: UIColor(named: "CustomGreen")!,
+            color: customGreen,
             icon: entry.icon,
             completionCount: completedEntries.filter { $0.entryId == entry.id }.count,
             entryId: entry.id,
@@ -313,10 +309,10 @@ extension TrackersViewController: EntryCreationDelegate {
         let newEntry = Tracker(
             id: UUID(),
             name: name,
-            color: color, // Используем переданный color
-            icon: icon,   // icon уже строка, преобразование не нужно
+            color: color,
+            icon: icon,
             activeDays: [],
-            category: group // Передаем группу как category
+            category: group
         )
         DataManager.shared.addEntry(newEntry, toGroupWithName: group.name)
         refreshInterfaceAfterCreation()
@@ -326,10 +322,10 @@ extension TrackersViewController: EntryCreationDelegate {
         let newEntry = Tracker(
             id: UUID(),
             name: name,
-            color: color, // Используем переданный color
-            icon: icon,   // icon уже строка, преобразование не нужно
+            color: color,
+            icon: icon,
             activeDays: days,
-            category: group // Передаем группу как category
+            category: group
         )
         DataManager.shared.addEntry(newEntry, toGroupWithName: group.name)
         refreshInterfaceAfterCreation()

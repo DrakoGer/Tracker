@@ -84,5 +84,3 @@ extension EventColorCollection: UICollectionViewDataSource, UICollectionViewDele
         collectionView.reloadItems(at: [indexPath])
     }
 }
-
-

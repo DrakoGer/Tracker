@@ -41,7 +41,6 @@ final class DayPickerController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("ScheduleViewController: viewDidLoad called")
         view.backgroundColor = UIColor(named: "CustomWhite")
         navigationItem.title = "Расписание"
         setupInterface()

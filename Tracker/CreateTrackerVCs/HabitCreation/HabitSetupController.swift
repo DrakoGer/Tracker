@@ -15,7 +15,7 @@ protocol HabitColorSelectionDelegate: AnyObject {
 
 import UIKit
 
-final class HabitSetupController: UIViewController {
+final class HabitSetupController: UIViewController, UITextFieldDelegate {
     private let trackerStore = TrackerStore()
     private let categoryStore = TrackerCategoryStore()
     
@@ -60,6 +60,7 @@ final class HabitSetupController: UIViewController {
         field.clearButtonMode = .whileEditing
         field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: field.frame.height))
         field.leftViewMode = .always
+        field.delegate = self // Устанавливаем делегат
         field.addTarget(self, action: #selector(nameFieldChanged), for: .editingChanged)
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
@@ -80,7 +81,6 @@ final class HabitSetupController: UIViewController {
         return table
     }()
     
-    // Добавляем коллекции для emoji и цвета
     private lazy var emojiCollectionView: HabitEmojiCollection = {
         let collectionView = HabitEmojiCollection(emojies: emojis)
         collectionView.selectionDelegate = self
@@ -149,16 +149,14 @@ final class HabitSetupController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("HabitSetupController: viewDidLoad called")
         view.backgroundColor = UIColor(named: "CustomWhite")
         navigationItem.title = "Новая привычка"
         setupInterface()
-        
+        setupKeyboardDismissal() // Добавляем настройку для скрытия клавиатуры
         categoryStore.ensureDefaultCategoryExists("Ежедневные цели")
     }
     
     private func setupInterface() {
-        
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
@@ -181,7 +179,7 @@ final class HabitSetupController: UIViewController {
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor), // Привязываем к safeArea
             
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
@@ -221,6 +219,48 @@ final class HabitSetupController: UIViewController {
             actionStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             actionStack.heightAnchor.constraint(equalToConstant: 60),
         ])
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    private func setupKeyboardDismissal() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardHeight = keyboardFrame.cgRectValue.height
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+            
+            let scrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView
+            scrollView?.contentInset = contentInsets
+            scrollView?.scrollIndicatorInsets = contentInsets
+            
+            if let scrollView = scrollView {
+                let actionStackFrame = actionStack.convert(actionStack.bounds, to: scrollView)
+                scrollView.scrollRectToVisible(actionStackFrame, animated: true)
+            }
+        }
+    }
+    
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        let scrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView
+        scrollView?.contentInset = contentInsets
+        scrollView?.scrollIndicatorInsets = contentInsets
+    }
+    
+    // MARK: - UITextFieldDelegate
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     @objc private func nameFieldChanged() {
@@ -232,9 +272,9 @@ final class HabitSetupController: UIViewController {
     }
     
     @objc private func saveTapped() {
-        guard let name = nameField.text, !name.isEmpty, !activeDays.isEmpty else { return }
-        guard let selectedEmoji = selectedEmoji else { return }
-        guard let selectedColor = selectedColor else { return }
+        guard let name = nameField.text, !name.isEmpty, !activeDays.isEmpty,
+              let selectedEmoji = selectedEmoji,
+              let selectedColor = selectedColor else { return }
         
         let tracker = Tracker(
             id: UUID(),
@@ -265,8 +305,6 @@ final class HabitSetupController: UIViewController {
         let isDaysSelected = !activeDays.isEmpty
         let isEmojiSelected = selectedEmoji != nil
         let isColorSelected = selectedColor != nil
-        
-        print("HabitSetupController: updateSaveButtonState - isNameValid: \(isNameValid), isDaysSelected: \(isDaysSelected), isEmojiSelected: \(isEmojiSelected), isColorSelected: \(isColorSelected)")
         
         saveButton.isEnabled = isNameValid && isDaysSelected && isEmojiSelected && isColorSelected
         saveButton.backgroundColor = saveButton.isEnabled ? UIColor(named: "CustomBlack") : UIColor(named: "CustomGray")
@@ -344,13 +382,11 @@ extension HabitSetupController: ScheduleViewController {
 
 extension HabitSetupController: HabitEmojiSelectionDelegate, HabitColorSelectionDelegate {
     func didSelectEmoji(_ emoji: String) {
-        print("HabitSetupController: didSelectColor called with emoji: \(emoji)")
         selectedEmoji = emoji
         updateSaveButtonState()
     }
     
     func didSelectColor(_ color: UIColor) {
-        print("HabitSetupController: didSelectColor called with color: \(color)")
         selectedColor = color
         updateSaveButtonState()
     }

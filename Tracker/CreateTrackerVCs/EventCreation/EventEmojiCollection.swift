@@ -49,18 +49,13 @@ extension EventEmojiCollection: UICollectionViewDataSource, UICollectionViewDele
         cell.configure(with: emoji)
         
         
-        if let selectedIndex = selectedIndex, selectedIndex == indexPath.item {
-            
-            if let selectedColor = UIColor(named: "CustomLightGrey") {
-                cell.setSelectedBackground(color: selectedColor)
-            } else {
-                
-                cell.setSelectedBackground(color: .lightGray)
-            }
+        if selectedIndex == indexPath.item {
+            let color = UIColor(named: "CustomLightGrey") ?? .lightGray
+            cell.setSelectedBackground(color: color)
         } else {
             cell.clearSelectedBackground()
         }
-        
+
         return cell
     }
     

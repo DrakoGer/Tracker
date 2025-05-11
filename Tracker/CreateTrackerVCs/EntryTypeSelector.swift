@@ -44,7 +44,6 @@ final class EntryTypeSelector: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("EntryTypeSelector: viewDidLoad called")
         view.backgroundColor = UIColor(named: "CustomWhite")
         navigationItem.title = "Создание трекера"
         setupInterface()

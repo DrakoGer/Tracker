@@ -19,7 +19,6 @@ final class CoreDataSource {
             if let error = error as NSError? {
                 fatalError("Не удалось загрузить хранилище: \(error), \(error.userInfo)")
             }
-            print("CoreDataSource: Successfully loaded store at: \(storeDescription.url?.absoluteString ?? "Unknown")")
         })
         return container
     }()

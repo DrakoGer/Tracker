@@ -149,7 +149,6 @@ final class EventSetupController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("EventSetupController: viewDidLoad called")
         view.backgroundColor = UIColor(named: "CustomWhite")
         navigationItem.title = "Новое событие"
         setupInterface()
@@ -231,8 +230,13 @@ final class EventSetupController: UIViewController {
     }
     
     @objc private func saveTapped() {
-            guard let name = eventNameField.text, !name.isEmpty else { return }
-            guard let selectedEmoji = selectedEmoji, let selectedColor = selectedColor else { return }
+        guard
+                let name = eventNameField.text, !name.isEmpty,
+                let selectedEmoji = selectedEmoji,
+                let selectedColor = selectedColor
+            else {
+                return
+            }
             
             let tracker = Tracker(
                 id: UUID(),
@@ -261,9 +265,7 @@ final class EventSetupController: UIViewController {
         let isNameValid = !(eventNameField.text?.isEmpty ?? true)
         let isEmojiSelected = selectedEmoji != nil
         let isColorSelected = selectedColor != nil
-        
-        print("EventSetupController: updateSaveButtonState - isNameValid: \(isNameValid), isEmojiSelected: \(isEmojiSelected), isColorSelected: \(isColorSelected)")
-        
+
         saveButton.isEnabled = isNameValid && isEmojiSelected && isColorSelected
         saveButton.backgroundColor = saveButton.isEnabled ? UIColor(named: "CustomBlack") : UIColor(named: "CustomGray")
     }
@@ -310,13 +312,11 @@ extension EventSetupController: UITableViewDelegate, UITableViewDataSource {
 
 extension EventSetupController: EventEmojiSelectionDelegate, EventColorSelectionDelegate {
     func didSelectEmoji(_ emoji: String) {
-        print("EventSetupController: didSelectEmoji called with emoji: \(emoji)")
         selectedEmoji = emoji
         updateSaveButtonState()
     }
     
     func didSelectColor(_ color: UIColor) {
-        print("EventSetupController: didSelectColor called with color: \(color)")
         selectedColor = color
         updateSaveButtonState()
     }
