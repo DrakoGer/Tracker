@@ -238,9 +238,11 @@ extension TrackersViewController: UICollectionViewDataSource, UICollectionViewDe
         let cellDate = Calendar.current.startOfDay(for: selectedDate)
         let isActive = cellDate <= today
 
+        let customGreen = UIColor(named: "CustomGreen") ?? .gray
+
         cell.configure(
             title: entry.name,
-            color: UIColor(named: "CustomGreen")!,
+            color: customGreen,
             icon: entry.icon,
             completionCount: completedEntries.filter { $0.entryId == entry.id }.count,
             entryId: entry.id,
@@ -304,13 +306,27 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController: EntryCreationDelegate {
     func didCreateNewEvent(name: String, group: TrackerGroup, icon: String, color: UIColor) {
-        let newEntry = Tracker(id: UUID(), name: name, color: "CustomBlack", icon: String(icon), activeDays: [])
+        let newEntry = Tracker(
+            id: UUID(),
+            name: name,
+            color: color,
+            icon: icon,
+            activeDays: [],
+            category: group
+        )
         DataManager.shared.addEntry(newEntry, toGroupWithName: group.name)
         refreshInterfaceAfterCreation()
     }
 
     func didCreateNewHabit(name: String, group: TrackerGroup, icon: String, color: UIColor, days: Set<WeekDay>) {
-        let newEntry = Tracker(id: UUID(), name: name, color: "CustomBlack", icon: String(icon), activeDays: days)
+        let newEntry = Tracker(
+            id: UUID(),
+            name: name,
+            color: color,
+            icon: icon,
+            activeDays: days,
+            category: group
+        )
         DataManager.shared.addEntry(newEntry, toGroupWithName: group.name)
         refreshInterfaceAfterCreation()
     }

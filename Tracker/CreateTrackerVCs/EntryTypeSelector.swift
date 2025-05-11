@@ -9,19 +9,19 @@ import UIKit
 
 final class EntryTypeSelector: UIViewController {
     weak var delegate: EntryCreationDelegate?
-
+    
     private lazy var habitButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Привычка", for: .normal)
         button.titleLabel?.font = UIFont(name: "YS Display Medium", size: 16)
-        button.setTitleColor(UIColor(resource: .customWhite), for: .normal)
-        button.backgroundColor = UIColor(resource: .customBlack)
+        button.setTitleColor(UIColor(named: "CustomWhite"), for: .normal)
+        button.backgroundColor = UIColor(named: "CustomBlack")
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
+    
     private lazy var eventButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Нерегулярное событие", for: .normal)
@@ -33,7 +33,7 @@ final class EntryTypeSelector: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
+    
     private lazy var buttonStack: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [habitButton, eventButton])
         stack.axis = .vertical
@@ -41,14 +41,14 @@ final class EntryTypeSelector: UIViewController {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "CustomWhite")
         navigationItem.title = "Создание трекера"
         setupInterface()
     }
-
+    
     private func setupInterface() {
         view.addSubview(buttonStack)
         NSLayoutConstraint.activate([
@@ -60,14 +60,14 @@ final class EntryTypeSelector: UIViewController {
             eventButton.heightAnchor.constraint(equalToConstant: 60),
         ])
     }
-
+    
     @objc private func habitButtonTapped() {
         let habitSetupVC = HabitSetupController()
         habitSetupVC.delegate = delegate
         let navController = UINavigationController(rootViewController: habitSetupVC)
         present(navController, animated: true)
     }
-
+    
     @objc private func eventButtonTapped() {
         let eventSetupVC = EventSetupController()
         eventSetupVC.delegate = delegate
